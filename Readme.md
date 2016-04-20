@@ -1,6 +1,6 @@
 # Note #
 
-This is a form of ald IRC game !gidd (there is a !hund, !fish also).
+This is a fork of an old IRC game !gidd (there is a !hund, !fish also).
 
 Mostly in Russian :D
 

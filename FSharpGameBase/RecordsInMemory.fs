@@ -6,7 +6,7 @@ open System.Collections.Concurrent
 let diggRecords = new ConcurrentDictionary<string, int>()
 
 let diggRecInsert (dict :ConcurrentDictionary<string, int>) (what :string) (age :int) = 
-    dict.AddOrUpdate(what, age, (fun k cnt -> age ))
+    dict.AddOrUpdate(what, age, (fun _ _ -> age ))
 
 let diggRecAdd (dict :ConcurrentDictionary<string, int>) (what :string) (age :int) = 
     let res = dict.TryAdd(what, age)

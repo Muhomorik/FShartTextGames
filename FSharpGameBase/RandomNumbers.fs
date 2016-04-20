@@ -10,6 +10,6 @@ let getRandom maxNum =
 
 // http://numerics.mathdotnet.com/Random.html
 let getNormalDistributionRandom() = 
-    Normal.Sample(14.0, 5.0) |> Convert.ToInt32 
+    Normal.Sample(50.0, 5.0) |> Convert.ToInt32 
 
 

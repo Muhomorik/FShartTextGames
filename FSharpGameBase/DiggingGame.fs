@@ -3,7 +3,6 @@ module DiggingGame
 
 open System.IO
 
-//open StringTools
 open ResultTypes
 open PrintResultHelpers
 open RecordsInMemory
@@ -33,6 +32,7 @@ type DiggingGame(what_file:string, where_file:string) =
         value_new = 0
         }
 
+    /// Load db records to memory storage.
     let LoadSavedRecords =
         use conn = getConnection(db_name)
         DatabaseSelectAllRecords conn
@@ -59,11 +59,12 @@ type DiggingGame(what_file:string, where_file:string) =
             }
         p 
 
-
-    let processDigg (who:string) = 
+    /// Make random items and process them.
+    let processDigg (who:string) = async{
         let digg = MakeADigg who
         let rslt = ProcessFoundNotFound digg
         result <- rslt
+    }
 
     /// User action lile digg.
     member this.MakeAction(who:string) = processDigg who

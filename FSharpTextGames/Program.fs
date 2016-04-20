@@ -10,8 +10,8 @@ let main argv =
 
     let diggClass = new DiggingGame("digg_what", "digg_where.txt")
 
-    let xlist = [1..20] |> List.iter (fun x  -> 
-        diggClass.MakeAction(x.ToString())
+    [1..20] |> List.iter (fun x  -> 
+        diggClass.MakeAction(x.ToString()) |> Async.RunSynchronously
 
         printfn "%s" (diggClass.GetPreText())
         printfn "%s" (diggClass.GetPostText())

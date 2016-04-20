@@ -72,7 +72,7 @@ let ProcessForFound (movement:UserAction) =
 let ProcessFoundNotFound (movement:UserAction) = 
     match (movement.value_new) with
     // Got smth if weight is over 10.
-    | i when i >= 10 -> 
+    | i when i >= 20 -> 
         ProcessForFound movement
     // Nothing found for others.
     | _ -> 
