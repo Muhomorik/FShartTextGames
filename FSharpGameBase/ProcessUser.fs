@@ -67,7 +67,7 @@ let ProcessForFound (movement:UserAction) =
 
     // New value.
     | false, _ ->      
-        diggRecAdd diggRecords movement.what movement.value_new
+        diggRecAddOrUpdate diggRecords movement.what movement.value_new |> ignore
         let r = 
             { 
             result = ResultType.FoundNew

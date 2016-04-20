@@ -1,5 +1,5 @@
 ﻿module TestLogic
-
+open System.Collections.Concurrent
 open NUnit.Framework
 open FsUnit
 
@@ -74,3 +74,13 @@ let``test found nothing``()=
     rslt.where |> should equal found_nothing.where
     rslt.value_old |> should equal 0
     rslt.value_new |> should equal found_nothing.value_new
+
+let diggRecords = new ConcurrentDictionary<string, int>()
+let diggRecInsert (dict :ConcurrentDictionary<string, int>) (what :string) (age :int) = 
+    dict.AddOrUpdate(what, age, (fun _ _ -> age ))
+
+
+//    rslt.what |> should equal found_nothing.what
+//    rslt.where |> should equal found_nothing.where
+//    rslt.value_old |> should equal 0
+//    rslt.value_new |> should equal found_nothing.value_new
