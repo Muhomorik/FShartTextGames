@@ -10,10 +10,10 @@ open RecordsInDb
 open ProcessUser
 open RandomNumbers
 
-type DiggingGame(what_file:string, where_file:string) = 
+type DiggingGame(whatFile:string, whereFile:string) = 
     
-    let mutable filename_where = "digg_where.txt"
-    let mutable filename_what = "digg_what.txt"
+    let mutable filename_where = whereFile
+    let mutable filename_what = whatFile
 
     let text_where = File.ReadAllLines(filename_where)
     let text_what = File.ReadAllLines(filename_what)
@@ -43,18 +43,19 @@ type DiggingGame(what_file:string, where_file:string) =
                      diggRecAdd diggRecords r.what r.weight)
         | _ -> ()
     }
+    
+    // Ctor call, load db.
+    do loadSavedRecords |> Async.RunSynchronously
 
     /// Create a digg/movement from user.
     let makeDigg (who:string) = async{
-        do! loadSavedRecords
-        
         let index_what = getRandom (len_what-1)
         let index_where = getRandom (len_where-1)
 
         let item_where = text_where.[index_where]
         let item_what = text_what.[index_what]
 
-        let age = getNormalDistributionRandom()
+        let age = getNormalDistributionRandom() // this one is slow.
     
         let p:UserAction = {
             who = who
@@ -68,7 +69,7 @@ type DiggingGame(what_file:string, where_file:string) =
     /// Make random items and process them.
     let processDigg (who:string) = async{
         let! digg = makeDigg who
-        let rslt = ProcessFoundNotFound digg
+        let rslt = ProcessFoundNotFound digg 20
         result <- rslt
     }
 

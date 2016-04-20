@@ -49,7 +49,7 @@ let main argv =
 
     let diggClass = new DiggingGame("digg_what", "digg_where.txt")
 
-    let xlist = [1..20] |> List.iter (fun x  -> 
+    [1..20] |> List.iter (fun x  -> 
         diggClass.MakeAction(x.ToString())
 
         printfn "%s" (diggClass.GetPreText())

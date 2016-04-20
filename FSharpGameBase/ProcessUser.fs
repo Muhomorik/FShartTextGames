@@ -31,46 +31,40 @@ let UpdateRecordAsync val_new val_stored who what where = async{
     use conn = getConnection(db_name)
     let orm_res = ConvertResultToRecord r
     DatabaseInsertOrUpdate conn orm_res |> ignore
-    //return r
 }
 
-/// Process and compare existing values.
-let ProcessExistingValues val_new val_stored who what where =
-    match val_new > val_stored with
+/// Process and compare existing values. Result must come with type Found.
+let ProcessExistingValues (r:Result) =
+    match r.value_new > r.value_old with
     // New record. Hurray!
     | true ->
-        diggRecUpdate diggRecords what val_new val_stored  // todo: this is better in main thread, not async.
+        diggRecUpdate diggRecords r.what r.value_new r.value_old  // todo: this is better in main thread, not async.
         
-        UpdateRecordAsync val_new val_stored who what where |> Async.Start
-        let r = { 
-            result = ResultType.FoundRecord
-            nickname = who
-            what = what
-            where = where
-            value_old = val_stored
-            value_new = val_new
-            }
-        r
+        UpdateRecordAsync r.value_new r.value_old r.nickname r.what r.where |> Async.Start
+        let rUpdate = {r with result = ResultType.FoundRecord}
+        rUpdate
     // Nothing new, skip.
     | false ->
-        { 
-        result = ResultType.Found
-        nickname = who
-        what = what
-        where = where
-        value_old = val_stored
-        value_new = val_new
-        }
+        r  // must have right type
 
 /// Check if result been seen before or completely new.
 let ProcessForFound (movement:UserAction) = 
-    
+    // TODO: as real match.
     // Get record from memory store.
     let ok, stored = diggRecords.TryGetValue(movement.what)
     match ok with
     // Value have already been seen.     
     | true ->
-        ProcessExistingValues movement.value_new stored movement.who movement.what movement.where
+        let r = 
+            { 
+            result = ResultType.Found // this one is temp.
+            nickname = movement.who
+            what = movement.what
+            where = movement.where
+            value_old = stored
+            value_new = movement.value_new
+            }
+        ProcessExistingValues r
 
     // New value.
     | false ->      
@@ -89,11 +83,11 @@ let ProcessForFound (movement:UserAction) =
         AddDiggRecordAsync r |> Async.Start 
         r
 
-/// Top check - found or notheng found.
-let ProcessFoundNotFound (movement:UserAction) = 
+/// Top check - found or nothing found based on weight.
+let ProcessFoundNotFound (movement:UserAction) (treshold:int) = 
     match (movement.value_new) with
     // Got smth if weight is over 10.
-    | i when i >= 20 -> 
+    | i when i >= treshold -> 
         ProcessForFound movement
     // Nothing found for others.
     | _ -> 

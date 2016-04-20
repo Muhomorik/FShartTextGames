@@ -10,9 +10,9 @@ let main argv =
 
     let stopWatch = System.Diagnostics.Stopwatch.StartNew()
 
-    let diggClass = new DiggingGame("digg_what", "digg_where.txt")
+    let diggClass = new DiggingGame("digg_what.txt", "digg_where.txt")
 
-    [1..20] |> List.iter (fun x  -> 
+    [1..5] |> List.iter (fun x  -> 
         diggClass.MakeAction(x.ToString()) |> Async.RunSynchronously
 
         printfn "%s" (diggClass.GetPreText())
