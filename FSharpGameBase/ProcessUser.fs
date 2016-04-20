@@ -17,14 +17,14 @@ let AddDiggRecordAsync (r:Result) = async{
 }
 
 ///Update in-memory and DB record tables.
-let UpdateRecordAsync val_new val_stored who what where = async{
+let UpdateRecordAsync valNew valStored who what where = async{
     let r = { 
         result = ResultType.FoundRecord
         nickname = who
         what = what
         where = where
-        value_old = val_stored
-        value_new = val_new
+        value_old = valStored
+        value_new = valNew
         }
 
     // Update db
@@ -45,16 +45,15 @@ let ProcessExistingValues (r:Result) =
         rUpdate
     // Nothing new, skip.
     | false ->
-        r  // must have right type
+        r  // must have right ResultType from input (Found).
 
 /// Check if result been seen before or completely new.
 let ProcessForFound (movement:UserAction) = 
-    // TODO: as real match.
+
     // Get record from memory store.
-    let ok, stored = diggRecords.TryGetValue(movement.what)
-    match ok with
+    match diggRecords.TryGetValue(movement.what) with
     // Value have already been seen.     
-    | true ->
+    | true, stored ->
         let r = 
             { 
             result = ResultType.Found // this one is temp.
@@ -67,8 +66,8 @@ let ProcessForFound (movement:UserAction) =
         ProcessExistingValues r
 
     // New value.
-    | false ->      
-        diggRecAdd diggRecords movement.what movement.value_new // TODO: take Result
+    | false, _ ->      
+        diggRecAdd diggRecords movement.what movement.value_new
         let r = 
             { 
             result = ResultType.FoundNew

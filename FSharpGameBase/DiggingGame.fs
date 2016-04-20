@@ -67,11 +67,11 @@ type DiggingGame(whatFile:string, whereFile:string) =
     }     
 
     /// Make random items and process them.
-    let processDigg (who:string) = async{
-        let! digg = makeDigg who
+    let processDigg (who:string) = 
+        let digg = makeDigg who |> Async.RunSynchronously
         let rslt = ProcessFoundNotFound digg 20
         result <- rslt
-    }
+    
 
     /// User action lile digg.
     member this.MakeAction(who:string) = processDigg who

@@ -12,8 +12,8 @@ let main argv =
 
     let diggClass = new DiggingGame("digg_what.txt", "digg_where.txt")
 
-    [1..5] |> List.iter (fun x  -> 
-        diggClass.MakeAction(x.ToString()) |> Async.RunSynchronously
+    [1..20] |> List.iter (fun x  -> 
+        diggClass.MakeAction(x.ToString())
 
         printfn "%s" (diggClass.GetPreText())
         printfn "%s" (diggClass.GetPostText())

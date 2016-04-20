@@ -6,32 +6,32 @@ open FsUnit
 open FSharpGameBase
 
 [<Literal>]
-let tresholdNotFound = 20
+let TresholdNotFound = 20
 
 let first_val_1:ResultTypes.UserAction = { 
     who = "nick_1"
     what = "what 1"
     where = "where 1"
-    value_new = (tresholdNotFound + 1)
+    value_new = (TresholdNotFound + 1)
     }
 
 let first_val_record:ResultTypes.UserAction = { 
     who = "nick_1"
     what = "what 1"
     where = "where 1"
-    value_new = (tresholdNotFound + 3)
+    value_new = (TresholdNotFound + 3)
     }
 
 let found_nothing:ResultTypes.UserAction = { 
     who = "nick_1"
     what = "what 1"
     where = "where 1"
-    value_new = (tresholdNotFound-2) // less than 10
+    value_new = (TresholdNotFound-2) // less than 10
     }
 
 [<Test>]
 let``test first insert``()=
-    let rslt = ProcessUser.ProcessFoundNotFound first_val_1 tresholdNotFound
+    let rslt = ProcessUser.ProcessFoundNotFound first_val_1 TresholdNotFound
     
     rslt.result |> should equal ResultTypes.FoundNew
     rslt.nickname |> should equal first_val_1.who
@@ -42,8 +42,8 @@ let``test first insert``()=
 
 [<Test>]
 let``test found existing``()=
-    let rslt_0 = ProcessUser.ProcessFoundNotFound first_val_1 tresholdNotFound
-    let rslt = ProcessUser.ProcessFoundNotFound first_val_1 tresholdNotFound
+    let rslt_0 = ProcessUser.ProcessFoundNotFound first_val_1 TresholdNotFound
+    let rslt = ProcessUser.ProcessFoundNotFound first_val_1 TresholdNotFound
 
     rslt.result |> should equal ResultTypes.Found
     rslt.nickname |> should equal first_val_1.who
@@ -54,8 +54,8 @@ let``test found existing``()=
 
 [<Test>]
 let``test new record reached``()=
-    let rslt_0 = ProcessUser.ProcessFoundNotFound first_val_1 tresholdNotFound
-    let rslt = ProcessUser.ProcessFoundNotFound first_val_record tresholdNotFound
+    let rslt_0 = ProcessUser.ProcessFoundNotFound first_val_1 TresholdNotFound
+    let rslt = ProcessUser.ProcessFoundNotFound first_val_record TresholdNotFound
 
     rslt.result |> should equal ResultTypes.FoundRecord
     rslt.nickname |> should equal first_val_record.who
@@ -66,7 +66,7 @@ let``test new record reached``()=
 
 [<Test>]
 let``test found nothing``()=
-    let rslt = ProcessUser.ProcessFoundNotFound found_nothing tresholdNotFound
+    let rslt = ProcessUser.ProcessFoundNotFound found_nothing TresholdNotFound
 
     rslt.result |> should equal ResultTypes.FoundNothing
     rslt.nickname |> should equal found_nothing.who
