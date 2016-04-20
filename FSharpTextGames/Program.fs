@@ -8,6 +8,8 @@ open System.Text
 let main argv = 
     Console.OutputEncoding <- Encoding.Unicode
 
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+
     let diggClass = new DiggingGame("digg_what", "digg_where.txt")
 
     [1..20] |> List.iter (fun x  -> 
@@ -17,4 +19,7 @@ let main argv =
         printfn "%s" (diggClass.GetPostText())
         )
     
+    stopWatch.Stop()
+    printfn "%f" stopWatch.Elapsed.TotalMilliseconds
+
     0 // return an integer exit code

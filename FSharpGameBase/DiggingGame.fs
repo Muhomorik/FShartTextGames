@@ -33,15 +33,20 @@ type DiggingGame(what_file:string, where_file:string) =
         }
 
     /// Load db records to memory storage.
-    let LoadSavedRecords =
-        use conn = getConnection(db_name)
-        DatabaseSelectAllRecords conn
-            |> List.iter (fun r ->
-                 diggRecAdd diggRecords r.what r.weight)
+    let loadSavedRecords = async{
+        match diggRecords.Count with
+        | 0 ->
+            printfn "Re-load records..."
+            use conn = getConnection(db_name)
+            DatabaseSelectAllRecords conn
+                |> List.iter (fun r ->
+                     diggRecAdd diggRecords r.what r.weight)
+        | _ -> ()
+    }
 
     /// Create a digg/movement from user.
-    let MakeADigg (who:string) = 
-        LoadSavedRecords
+    let makeDigg (who:string) = async{
+        do! loadSavedRecords
         
         let index_what = getRandom (len_what-1)
         let index_where = getRandom (len_where-1)
@@ -57,11 +62,12 @@ type DiggingGame(what_file:string, where_file:string) =
             where  = item_where
             value_new  = age
             }
-        p 
+        return p
+    }     
 
     /// Make random items and process them.
     let processDigg (who:string) = async{
-        let digg = MakeADigg who
+        let! digg = makeDigg who
         let rslt = ProcessFoundNotFound digg
         result <- rslt
     }

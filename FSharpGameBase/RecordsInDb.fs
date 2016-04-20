@@ -75,7 +75,7 @@ let getConnection(db_name:string) =
 
 /// Query for DB insert.
 let query_dbInsert =
-    @"INSERT INTO recordsFishing VALUES (@nickname, @what, @weight, @dateWhen)"
+    @"INSERT OR REPLACE INTO recordsFishing VALUES (@nickname, @what, @weight, @dateWhen)"
 
 
 /// Insert new value into DB.

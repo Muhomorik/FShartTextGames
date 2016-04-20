@@ -7,12 +7,41 @@ open RecordsInDb
 // TODO: Use record for everything? Like 'diggRecUpdate record' 
 // TODO: Figure out types Result/DbResult. 
 
+
+/// Add new record to db record table async.
+let AddDiggRecordAsync (r:Result) = async{
+    // Write to db
+    use conn = getConnection(db_name)
+    let orm_res = ConvertResultToRecord r
+    DatabaseInsertOrUpdate conn orm_res |> ignore
+}
+
+///Update in-memory and DB record tables.
+let UpdateRecordAsync val_new val_stored who what where = async{
+    let r = { 
+        result = ResultType.FoundRecord
+        nickname = who
+        what = what
+        where = where
+        value_old = val_stored
+        value_new = val_new
+        }
+
+    // Update db
+    use conn = getConnection(db_name)
+    let orm_res = ConvertResultToRecord r
+    DatabaseInsertOrUpdate conn orm_res |> ignore
+    //return r
+}
+
 /// Process and compare existing values.
-let ProcessExistingValues val_new val_stored who what where = 
+let ProcessExistingValues val_new val_stored who what where =
     match val_new > val_stored with
     // New record. Hurray!
     | true ->
-        diggRecUpdate diggRecords what val_new val_stored
+        diggRecUpdate diggRecords what val_new val_stored  // todo: this is better in main thread, not async.
+        
+        UpdateRecordAsync val_new val_stored who what where |> Async.Start
         let r = { 
             result = ResultType.FoundRecord
             nickname = who
@@ -21,13 +50,7 @@ let ProcessExistingValues val_new val_stored who what where =
             value_old = val_stored
             value_new = val_new
             }
-
-        // Update db
-        use conn = getConnection(db_name)
-        let orm_res = ConvertResultToRecord r
-        DatabaseInsertOrUpdate conn orm_res |> ignore
         r
-
     // Nothing new, skip.
     | false ->
         { 
@@ -48,9 +71,9 @@ let ProcessForFound (movement:UserAction) =
     // Value have already been seen.     
     | true ->
         ProcessExistingValues movement.value_new stored movement.who movement.what movement.where
-    
+
     // New value.
-    | false ->
+    | false ->      
         diggRecAdd diggRecords movement.what movement.value_new // TODO: take Result
         let r = 
             { 
@@ -62,10 +85,8 @@ let ProcessForFound (movement:UserAction) =
             value_new = movement.value_new
             }
         
-        // Write to db
-        use conn = getConnection(db_name)
-        let orm_res = ConvertResultToRecord r
-        DatabaseInsertOrUpdate conn orm_res |> ignore
+        // Write to db        
+        AddDiggRecordAsync r |> Async.Start 
         r
 
 /// Top check - found or notheng found.
