@@ -4,17 +4,13 @@ open System.Collections.Concurrent
 
 let diggRecords = new ConcurrentDictionary<string, int>()
 
+// Abstractions from implementation (in case want to change later).
+
 /// Adds new value to in-memory records or replaces if exists.
 /// Returns inserted value.
-let diggRecAddOrUpdate (dict :ConcurrentDictionary<string, int>) (what :string) (age :int) = 
-    dict.AddOrUpdate(what, age, (fun _ _ -> age ))
+let diggRecAddOrUpdate (what :string) (age :int) = 
+    diggRecords.AddOrUpdate(what, age, (fun _ _ -> age ))
 
-
-
-let diggRecUpdate (dict :ConcurrentDictionary<string, int>) (what :string) (age_new :int) (age_stored :int) = 
-    let res = dict.TryUpdate(what, age_new, age_stored)
-    match res with
-    | true -> 
-        //printfn "\nupdate %s from %d to %d\n" what age_stored age_new
-        ()
-    | false -> failwith "diggRecUpdate failed"
+/// Try to get value from in-memory storage.
+let diggRecTryGetValue (what :string)  = 
+    diggRecords.TryGetValue(what)

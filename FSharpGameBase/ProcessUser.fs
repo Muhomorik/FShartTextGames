@@ -5,6 +5,7 @@ open RecordsInMemory
 open RecordsInDb
 
 // TODO: Use record for everything? Like 'diggRecUpdate record' 
+// TODO: Move db write up. Hard to test now. 
 // TODO: Figure out types Result/DbResult. 
 
 
@@ -38,7 +39,7 @@ let ProcessExistingValues (r:Result) =
     match r.value_new > r.value_old with
     // New record. Hurray!
     | true ->
-        diggRecUpdate diggRecords r.what r.value_new r.value_old  // todo: this is better in main thread, not async.
+        diggRecAddOrUpdate r.what r.value_new |> ignore  // This is better in main thread, not async.
         
         UpdateRecordAsync r.value_new r.value_old r.nickname r.what r.where |> Async.Start
         let rUpdate = {r with result = ResultType.FoundRecord}
@@ -51,7 +52,7 @@ let ProcessExistingValues (r:Result) =
 let ProcessForFound (movement:UserAction) = 
 
     // Get record from memory store.
-    match diggRecords.TryGetValue(movement.what) with
+    match diggRecTryGetValue movement.what with
     // Value have already been seen.     
     | true, stored ->
         let r = 
@@ -67,7 +68,7 @@ let ProcessForFound (movement:UserAction) =
 
     // New value.
     | false, _ ->      
-        diggRecAddOrUpdate diggRecords movement.what movement.value_new |> ignore
+        diggRecAddOrUpdate movement.what movement.value_new |> ignore
         let r = 
             { 
             result = ResultType.FoundNew

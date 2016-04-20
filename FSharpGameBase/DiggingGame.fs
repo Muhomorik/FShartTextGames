@@ -40,7 +40,7 @@ type DiggingGame(whatFile:string, whereFile:string) =
             use conn = getConnection(db_name)
             DatabaseSelectAllRecords conn
                 |> List.iter (fun r ->
-                     diggRecAddOrUpdate diggRecords r.what r.weight |> ignore)
+                     diggRecAddOrUpdate r.what r.weight |> ignore)
         | _ -> ()
     }
     
