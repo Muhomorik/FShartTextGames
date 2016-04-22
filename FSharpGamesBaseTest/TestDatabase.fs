@@ -2,11 +2,8 @@
 
 open NUnit.Framework
 open FsUnit
-
 open System
 open System.IO
-
-open FSharpGameBase
 
 let rec1: RecordsInDb.recordsFishingTable = {
      nickname = "n1" 
@@ -26,7 +23,7 @@ let rec1_updated: RecordsInDb.recordsFishingTable = {
 let``test db create new``()=
     
     let workdir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
-    let fullPath = Path.Combine(workdir, RecordsInDb.db_name)
+    let fullPath = Path.Combine(workdir, RecordsInDb.dbName)
 
     File.Delete(fullPath) // delete before.
 
@@ -44,7 +41,7 @@ let``test db create new``()=
 let``test db use existing``()=
     
     let workdir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
-    let fullPath = Path.Combine(workdir, RecordsInDb.db_name)
+    let fullPath = Path.Combine(workdir, RecordsInDb.dbName)
 
     File.Delete(fullPath) // delete before.
 
@@ -60,7 +57,7 @@ let``test db use existing``()=
 let``test db INSERT new``()=
     
     let workdir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
-    let fullPath = Path.Combine(workdir, RecordsInDb.db_name)
+    let fullPath = Path.Combine(workdir, RecordsInDb.dbName)
     File.Delete(fullPath)
 
     use conn = RecordsInDb.getConnection(fullPath)
@@ -75,7 +72,7 @@ let``test db INSERT new``()=
 let``test db SELECT new``()=
     
     let workdir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
-    let fullPath = Path.Combine(workdir, RecordsInDb.db_name)
+    let fullPath = Path.Combine(workdir, RecordsInDb.dbName)
     File.Delete(fullPath)
 
     use conn = RecordsInDb.getConnection(fullPath)
@@ -99,7 +96,7 @@ let``test db SELECT new``()=
 let``test db UPDATE new``()=
     
     let workdir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
-    let fullPath = Path.Combine(workdir, RecordsInDb.db_name)
+    let fullPath = Path.Combine(workdir, RecordsInDb.dbName)
     File.Delete(fullPath)
 
     use conn = RecordsInDb.getConnection(fullPath)

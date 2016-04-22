@@ -1,10 +1,10 @@
 ﻿module RecordsInDb
 
 open System
-open System.IO
 open System.Data.SQLite
 open Dapper
 open ResultTypes
+open DbInit
 
 /// Table ORM class.
 type recordsFishingTable = {
@@ -27,45 +27,18 @@ let ConvertResultToRecord (res:Result) =
 
 /// Database name.
 [<Literal>]
-let db_name = "recordsDb.db"
+let dbName = "recordsDb.db"
 
 // TODO: its a digging game...  eename table
 
-/// Query to create Digg records table.
-let query_TableCreateDigging =
-    @"CREATE TABLE recordsFishing (
-    nickname TEXT         NOT NULL,
-    what     TEXT         NOT NULL
-                          PRIMARY KEY,
-    weight   INT          NOT NULL,
-    dateWhen DATETIME     NOT NULL
-);"
 
-/// Create default db tables for empty db.
-let CreateDefaultTable (dbConnection:SQLiteConnection) = 
-    lazy(
-    printfn "Create default table"
-    let res = dbConnection.Execute(query_TableCreateDigging)
-    if res <> 0 then failwith "Failed to create defailt table."
-    )
-
-/// Get database if exists or create if missing.
-let GetDatabase db_name =
-    if(not (File.Exists(db_name))) 
-    then 
-        printfn "Create new db %s " db_name
-        SQLiteConnection.CreateFile(db_name)
-        false
-    else
-        //printfn "db exists"
-        true
 
 /// Get db connection.
-let getConnection(db_name:string) = 
+let getConnection(dbNname:string) = 
     // create if missing.
-    let existed = GetDatabase db_name
+    let existed = GetDatabase dbNname
 
-    let conString = sprintf "Data Source=%s;Version=3;" db_name
+    let conString = sprintf "Data Source=%s;Version=3;" dbNname
     //printfn "Connection string: %s " conString
 
     let dbConnection = new SQLiteConnection(conString)

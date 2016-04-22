@@ -37,7 +37,7 @@ type DiggingGame(whatFile:string, whereFile:string) =
         match diggRecords.Count with
         | 0 ->
             printfn "Re-load records..."
-            use conn = getConnection(db_name)
+            use conn = getConnection(dbName)
             DatabaseSelectAllRecords conn
                 |> List.iter (fun r ->
                      diggRecAddOrUpdate r.what r.weight |> ignore)
@@ -70,6 +70,7 @@ type DiggingGame(whatFile:string, whereFile:string) =
     let processDigg (who:string) = 
         let digg = makeDigg who |> Async.RunSynchronously
         let rslt = ProcessFoundNotFound digg 20
+        // TODO: write db  here?
         result <- rslt
     
 

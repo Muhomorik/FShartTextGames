@@ -12,24 +12,15 @@ open RecordsInDb
 /// Add new record to db record table async.
 let AddDiggRecordAsync (r:Result) = async{
     // Write to db
-    use conn = getConnection(db_name)
+    use conn = getConnection(dbName)
     let orm_res = ConvertResultToRecord r
     DatabaseInsertOrUpdate conn orm_res |> ignore
 }
 
-///Update in-memory and DB record tables.
-let UpdateRecordAsync valNew valStored who what where = async{
-    let r = { 
-        result = ResultType.FoundRecord
-        nickname = who
-        what = what
-        where = where
-        value_old = valStored
-        value_new = valNew
-        }
-
+///Update DB record table.
+let UpdateRecordAsync (r:Result) = async{
     // Update db
-    use conn = getConnection(db_name)
+    use conn = getConnection(dbName)
     let orm_res = ConvertResultToRecord r
     DatabaseInsertOrUpdate conn orm_res |> ignore
 }
@@ -40,8 +31,7 @@ let ProcessExistingValues (r:Result) =
     // New record. Hurray!
     | true ->
         diggRecAddOrUpdate r.what r.value_new |> ignore  // This is better in main thread, not async.
-        
-        UpdateRecordAsync r.value_new r.value_old r.nickname r.what r.where |> Async.Start
+        UpdateRecordAsync r |> Async.Start
         let rUpdate = {r with result = ResultType.FoundRecord}
         rUpdate
     // Nothing new, skip.
