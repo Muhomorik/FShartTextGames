@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TestLogic.fs" />
+    <Compile Include="TestDbInit.fs" />
     <Compile Include="TestDatabase.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
