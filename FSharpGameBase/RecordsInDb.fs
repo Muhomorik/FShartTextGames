@@ -25,31 +25,23 @@ let ConvertResultToRecord (res:Result) =
         }
     p
 
+// TODO: its a digging game...  rename table
 /// Database name.
 [<Literal>]
 let dbName = "recordsDb.db"
 
-// TODO: its a digging game...  eename table
-
-
-
 /// Get db connection.
 let getConnection(dbNname:string) = 
     // create if missing.
-    let existed = GetDatabase dbNname
+    CreateDatabaseIfMissing dbNname |> ignore
 
     let conString = sprintf "Data Source=%s;Version=3;" dbNname
-    //printfn "Connection string: %s " conString
-
     let dbConnection = new SQLiteConnection(conString)
-
-    if not existed then (CreateDefaultTable dbConnection).Force()
     dbConnection
 
 /// Query for DB insert.
 let query_dbInsert =
     @"INSERT OR REPLACE INTO recordsFishing VALUES (@nickname, @what, @weight, @dateWhen)"
-
 
 /// Insert new value into DB.
 let DatabaseInsert (dbConnection:SQLiteConnection)(record :recordsFishingTable) =

@@ -28,7 +28,7 @@ let``test db create new``()=
     File.Delete(fullPath) // delete before.
 
     let exists_before = File.Exists(fullPath)
-    let rslt = RecordsInDb.GetDatabase fullPath
+    let rslt = DbInit.CreateDatabaseIfMissing fullPath
     let exists_after = File.Exists(fullPath)
         
     exists_before |> should be False
@@ -45,8 +45,8 @@ let``test db use existing``()=
 
     File.Delete(fullPath) // delete before.
 
-    let rslt = RecordsInDb.GetDatabase fullPath
-    let rslt2 = RecordsInDb.GetDatabase fullPath
+    let rslt = DbInit.CreateDatabaseIfMissing fullPath
+    let rslt2 = DbInit.CreateDatabaseIfMissing fullPath
         
     rslt |> should be False
     rslt2 |> should be True
@@ -110,6 +110,27 @@ let``test db UPDATE new``()=
     let cnt = RecordsInDb.DatabaseUpdate conn rec1_updated
 
     cnt |> should equal 1 
+
+    File.Delete(fullPath)
+
+[<Test>]
+let``bd is created if missing``()=
+    
+    let workdir = AppDomain.CurrentDomain.SetupInformation.ApplicationBase
+    let fullPath = Path.Combine(workdir, RecordsInDb.dbName)
+
+    File.Delete(fullPath) // delete before.
+
+    let exists_before = File.Exists(fullPath)
+    
+    let rslt = DbInit.CreateDatabaseIfMissing fullPath
+    
+    let dbConnection = RecordsInDb.getConnection fullPath
+    let tableExists = DbInit.CheckIfTableExists dbConnection
+       
+    exists_before |> should be False
+    rslt |> should be False
+    tableExists |> should equal 1
 
     File.Delete(fullPath)
 
